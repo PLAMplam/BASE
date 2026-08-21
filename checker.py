@@ -13,49 +13,45 @@ def analyze_wallet(address):
         "endblock": 99999999,
         "sort": "asc"
     }
-    
-    response = requests.get(BASE_BLOCKSCOUT_URL, params=params)
-    data = response.json()
-    
-    if data.get('status') != '1' or not data.get('result'):
-        return {"error": "Invalid address or no transactions found"}
+    try:
+        response = requests.get(BASE_BLOCKSCOUT_URL, params=params, timeout=10)
+        data = response.json()
+        if data.get('status') != '1' or not data.get('result'):
+            return {"address": address, "error": "No transactions or API limit"}
 
-    txs = data['result']
-    total_tx = len(txs)
-    
-    contracts = set()
-    active_months = set()
-    total_gas_used = 0
+        txs = data['result']
+        contracts = set(t['to'].lower() for t in txs if t.get('to'))
+        active_months = set(datetime.fromtimestamp(int(t['timeStamp'])).strftime('%Y-%m') for t in txs)
+        gas_paid_eth = sum(int(t['gasUsed']) * int(t['gasPrice']) for t in txs) / 10**18
 
-    for tx in txs:
-        if tx.get('to'):
-            contracts.add(tx['to'].lower())
-        
-        tx_date = datetime.fromtimestamp(int(tx['timeStamp']))
-        active_months.add(f"{tx_date.year}-{tx_date.month}")
-        
-        total_gas_used += int(tx['gasUsed']) * int(tx['gasPrice'])
+        score = 0
+        if len(txs) >= 10: score += 20
+        if len(txs) >= 50: score += 20
+        if len(contracts) >= 5: score += 20
+        if len(active_months) >= 3: score += 20
+        if gas_paid_eth >= 0.005: score += 20
 
-    gas_paid_eth = total_gas_used / 10**18
-
-    # Scoring Rules
-    score = 0
-    if total_tx >= 10: score += 20
-    if total_tx >= 50: score += 20
-    if len(contracts) >= 5: score += 20
-    if len(active_months) >= 3: score += 20
-    if gas_paid_eth >= 0.005: score += 20
-
-    return {
-        "address": address,
-        "total_tx": total_tx,
-        "unique_contracts": len(contracts),
-        "active_months": len(active_months),
-        "gas_paid_eth": round(gas_paid_eth, 5),
-        "estimated_score": score
-    }
+        return {
+            "address": address,
+            "total_tx": len(txs),
+            "unique_contracts": len(contracts),
+            "active_months": len(active_months),
+            "gas_paid_eth": round(gas_paid_eth, 5),
+            "score": score
+        }
+    except Exception as e:
+        return {"address": address, "error": str(e)}
 
 if __name__ == "__main__":
-    target_address = "0xfc0cbfbc5245fd333efba768ceeedb3ef66d602e"
-    result = analyze_wallet(target_address)
-    print(json.dumps(result, indent=2))
+    try:
+        with open("wallets.json", "r") as f:
+            wallets = json.load(f)
+    except FileNotFoundError:
+        wallets = []
+
+    results = [analyze_wallet(addr) for addr in wallets]
+
+    with open("results.json", "w") as f:
+        json.dump(results, f, indent=2)
+
+    print("Updated results.json successfully")
