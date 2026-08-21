@@ -1,0 +1,38 @@
+name: Daily Base Wallet Checker
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # รันอัตโนมัติทุกวัน เวลา 07:00 น. (เวลาไทย)
+  workflow_dispatch: # ปุ่มสำหรับกดรันเองผ่านหน้าเว็บ
+
+permissions:
+  contents: write
+
+jobs:
+  run-checker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run Wallet Checker Script
+        run: python checker.py
+
+      - name: Commit and Push Results
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add results.json
+          git commit -m "Auto-update wallet check results [skip ci]" || exit 0
+          git push
