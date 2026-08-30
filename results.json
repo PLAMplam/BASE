@@ -1,6 +1,10 @@
 [
   {
     "address": "0xfc0cbfbc5245fd333efba768ceeedb3ef66d602e",
-    "error": "No transactions or API limit"
+    "total_tx": 3576,
+    "unique_contracts": 238,
+    "active_months": 21,
+    "gas_paid_eth": 0.00957,
+    "score": 100
   }
 ]
