@@ -1,6 +1,6 @@
 [
   {
     "address": "0xfc0cbfbc5245fd333efba768ceeedb3ef66d602e",
-    "error": "No transactions or API limit"
+    "error": "HTTPSConnectionPool(host='base.blockscout.com', port=443): Read timed out. (read timeout=10)"
   }
 ]
