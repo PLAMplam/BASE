@@ -1,6 +1,10 @@
 [
   {
     "address": "0xfc0cbfbc5245fd333efba768ceeedb3ef66d602e",
-    "error": "HTTPSConnectionPool(host='base.blockscout.com', port=443): Read timed out. (read timeout=10)"
+    "total_tx": 3609,
+    "unique_contracts": 238,
+    "active_months": 22,
+    "gas_paid_eth": 0.00958,
+    "score": 100
   }
 ]
