@@ -1,6 +1,10 @@
 [
   {
     "address": "0xfc0cbfbc5245fd333efba768ceeedb3ef66d602e",
-    "error": "Expecting value: line 1 column 1 (char 0)"
+    "total_tx": 3615,
+    "unique_contracts": 238,
+    "active_months": 22,
+    "gas_paid_eth": 0.00958,
+    "score": 100
   }
 ]
