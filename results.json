@@ -1,9 +1,9 @@
 [
   {
     "address": "0xfc0cbfbc5245fd333efba768ceeedb3ef66d602e",
-    "total_tx": 3734,
+    "total_tx": 3737,
     "unique_contracts": 240,
-    "active_months": 22,
+    "active_months": 23,
     "gas_paid_eth": 0.00969,
     "score": 100
   }
